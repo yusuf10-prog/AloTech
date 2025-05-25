@@ -1,18 +1,19 @@
 package pages;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 public class HomePage extends BasePage {
     
-    @FindBy(css = "h1")
+    @FindBy(xpath = "//h1 | //div[contains(@class, 'hero')]//h1")
     private WebElement mainTitle;
 
-    @FindBy(css = ".hero-title")
+    @FindBy(xpath = "//div[contains(text(), 'Çağrı')] | //h2[contains(text(), 'Çağrı')] | //p[contains(text(), 'Çağrı')] | //span[contains(text(), 'Çağrı')]")
     private WebElement cloudTitle;
 
-    @FindBy(css = ".brands-title")
+    @FindBy(xpath = "//div[contains(@class, 'brands')] | //div[contains(text(), 'Marka')]")
     private WebElement brandsTitle;
 
     public HomePage(WebDriver driver) {
@@ -21,7 +22,30 @@ public class HomePage extends BasePage {
 
     // Ana sayfayı aç
     public void openHomePage() {
-        driver.get("https://alotech.com.tr/");
+        driver.get("https://alotech.com.tr");
+        try {
+            Thread.sleep(10000); // Sayfanın yüklenmesi için daha uzun bir bekleme
+            
+            // Sayfanın tamamen yüklenmesini bekle
+            wait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
+            
+            // JavaScript yüklenmesini bekle
+            try {
+                wait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return window.jQuery != undefined && jQuery.active == 0"));
+            } catch (Exception e) {
+                // jQuery olmayabilir, bu durumu yok say
+            }
+            
+            // Dinamik içeriğin yüklenmesi için ek bekleme
+            Thread.sleep(5000);
+            
+            // Scroll yaptıktan sonra da bekle
+            scrollToBottom();
+            Thread.sleep(3000);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Ana sayfa başlığını al
@@ -37,5 +61,16 @@ public class HomePage extends BasePage {
     // Markalar başlığını al
     public String getBrandsTitle() {
         return getText(brandsTitle);
+    }
+
+    // Sayfanın en altına in
+    public void scrollToBottom() {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+        try {
+            Thread.sleep(1000); // Scroll işleminin tamamlanması için kısa bir bekleme
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

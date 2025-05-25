@@ -1,7 +1,5 @@
 package stepdefinitions;
 
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
 import io.cucumber.java.tr.Diyelimki;
 import io.cucumber.java.tr.Ozaman;
 import io.cucumber.java.tr.Ve;
@@ -10,17 +8,7 @@ import pages.HomePage;
 import utils.DriverManager;
 
 public class HomePageSteps {
-    private HomePage homePage;
-
-    @Before
-    public void setup() {
-        homePage = new HomePage(DriverManager.getDriver());
-    }
-
-    @After
-    public void tearDown() {
-        DriverManager.quitDriver();
-    }
+    private HomePage homePage = new HomePage(DriverManager.getDriver());
 
     @Diyelimki("AloTech ana sayfasına gittim")
     public void anaGittim() {
@@ -35,6 +23,12 @@ public class HomePageSteps {
 
     @Ve("ana sayfada {string} yazısını görmeliyim")
     public void yaziKontrol(String beklenenYazi) {
+        homePage.scrollToBottom(); // Sayfanın en altına in
+        try {
+            Thread.sleep(2000); // Scroll sonrası elementlerin yüklenmesi için bekleme
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String bulunanYazi;
         if (beklenenYazi.contains("Çağrı Merkezi")) {
             bulunanYazi = homePage.getCloudTitle();

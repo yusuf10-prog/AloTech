@@ -9,12 +9,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class BasePage {
+    private final int WAIT_TIMEOUT = 10;
     protected WebDriver driver;
     protected WebDriverWait wait;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5)); // 2 saniye bekleme süresi
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(WAIT_TIMEOUT)); // 10 saniye bekleme süresi
         PageFactory.initElements(driver, this);
     }
 
